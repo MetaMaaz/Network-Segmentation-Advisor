@@ -1,0 +1,118 @@
+# Port/service -> role heuristics. Data-driven so they can be tuned or
+# extended without touching code, and so every classification is defensible:
+# the matching signature's name and rationale explain the decision.
+#
+# The highest-priority matching signature wins.
+#
+# Matchers (all matchers present in a signature must pass):
+#   ports_all:          every listed port must be open
+#   ports_any:          at least one listed port must be open
+#   ports_only:         the host's open ports must be a subset of this list
+#   ports_none:         none of these ports may be open (negative evidence)
+#   service_names_any:  at least one nmap service name matches (case-insensitive)
+#   os_contains_any:    OS fingerprint contains one of these substrings
+
+signatures:
+  - name: domain-controller
+    role: domain-controller
+    sensitivity: critical
+    priority: 100
+    rationale: >-
+      Kerberos (88) and LDAP (389) together are a strong Active Directory
+      domain controller signal. DCs hold the keys to the entire domain.
+    match:
+      ports_all: [88, 389]
+
+  - name: database
+    role: database
+    sensitivity: critical
+    priority: 90
+    rationale: >-
+      An exposed database engine port. Databases hold the data an attacker
+      is ultimately after, so they get the most restrictive zone.
+    match:
+      ports_any: [1433, 1521, 3306, 5432, 6379, 27017]
+
+  - name: printer
+    role: printer
+    sensitivity: untrusted
+    priority: 85
+    rationale: >-
+      JetDirect (9100), IPP (631) or LPD (515). Printers are rarely patched
+      and frequently abused for persistence — high-risk, low-value: isolate.
+    match:
+      ports_any: [515, 631, 9100]
+
+  - name: iot-camera
+    role: iot
+    sensitivity: untrusted
+    priority: 84
+    rationale: >-
+      RTSP streaming (554/8554) is characteristic of IP cameras and similar
+      IoT devices. Treat as untrusted and isolate.
+    match:
+      ports_any: [554, 8554]
+
+  - name: file-server
+    role: file-server
+    sensitivity: high
+    priority: 70
+    rationale: >-
+      SMB or NFS file sharing without domain-controller or desktop signals.
+    match:
+      ports_any: [445, 2049]
+      ports_none: [88, 3389]   # not a DC, not an RDP desktop
+
+  - name: jump-host
+    role: jump-host
+    sensitivity: high
+    priority: 60
+    rationale: >-
+      A host exposing SSH and nothing else — an administrative bastion.
+      It belongs in the management zone with tightly controlled access.
+    match:
+      ports_all: [22]
+      ports_only: [22]
+
+  - name: app-server
+    role: app-server
+    sensitivity: medium
+    priority: 55
+    rationale: >-
+      Application/API ports (8080, 8000, ...) distinct from the public web
+      tier. Sits between users/DMZ and the data tier.
+    match:
+      ports_any: [5000, 8000, 8080, 8443, 9000]
+
+  - name: web-server
+    role: web-server
+    sensitivity: medium
+    priority: 50
+    rationale: >-
+      Serves HTTP/HTTPS — a DMZ candidate exposed to the largest audience.
+    match:
+      ports_any: [80, 443]
+
+  - name: workstation-rdp
+    role: workstation
+    sensitivity: standard
+    priority: 40
+    rationale: >-
+      RDP (3389) is the classic desktop remote-access signal.
+    match:
+      ports_any: [3389]
+
+  - name: workstation-os
+    role: workstation
+    sensitivity: standard
+    priority: 35
+    rationale: >-
+      Desktop operating system fingerprint.
+    match:
+      os_contains_any: ["windows 10", "windows 11", "macos", "desktop"]
+
+# Hosts matching no signature. The recommender places these in a quarantine
+# zone: in a zero-trust posture an unclassified asset earns no implicit trust.
+default:
+  role: unknown
+  sensitivity: standard
