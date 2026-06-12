@@ -1,0 +1,113 @@
+# Hand-written mock of a realistic *flat* small-business network
+# (everything on 192.168.1.0/24, no segmentation). This file uses the exact
+# same format discovery.py produces, so the entire analysis pipeline runs
+# against it with zero network access — the main development/test loop.
+source: mock
+hosts:
+  - ip: 192.168.1.5
+    hostname: dc-01
+    os: Windows Server 2022
+    services:
+      - {port: 53,  protocol: tcp, name: domain,        version: Simple DNS Plus}
+      - {port: 88,  protocol: tcp, name: kerberos-sec,  version: Microsoft Windows Kerberos}
+      - {port: 135, protocol: tcp, name: msrpc,         version: Microsoft Windows RPC}
+      - {port: 389, protocol: tcp, name: ldap,          version: Microsoft Windows AD LDAP}
+      - {port: 445, protocol: tcp, name: microsoft-ds,  version: ""}
+      - {port: 636, protocol: tcp, name: ldapssl,       version: ""}
+
+  - ip: 192.168.1.10
+    hostname: web-01
+    os: Ubuntu 22.04
+    services:
+      - {port: 22,  protocol: tcp, name: ssh,   version: OpenSSH 9.6}
+      - {port: 80,  protocol: tcp, name: http,  version: nginx 1.24.0}
+      - {port: 443, protocol: tcp, name: https, version: nginx 1.24.0}
+
+  - ip: 192.168.1.11
+    hostname: web-02
+    os: Ubuntu 22.04
+    services:
+      - {port: 22,  protocol: tcp, name: ssh,   version: OpenSSH 9.6}
+      - {port: 80,  protocol: tcp, name: http,  version: nginx 1.24.0}
+      - {port: 443, protocol: tcp, name: https, version: nginx 1.24.0}
+
+  - ip: 192.168.1.20
+    hostname: app-01
+    os: Debian 12
+    services:
+      - {port: 22,   protocol: tcp, name: ssh,      version: OpenSSH 9.2}
+      - {port: 8080, protocol: tcp, name: http-alt, version: Gunicorn 21.2}
+
+  - ip: 192.168.1.30
+    hostname: db-01
+    os: Ubuntu 22.04
+    services:
+      - {port: 22,   protocol: tcp, name: ssh,   version: OpenSSH 9.6}
+      - {port: 3306, protocol: tcp, name: mysql, version: MySQL 8.0.36}
+
+  - ip: 192.168.1.31
+    hostname: db-02
+    os: Debian 12
+    services:
+      - {port: 22,   protocol: tcp, name: ssh,        version: OpenSSH 9.2}
+      - {port: 5432, protocol: tcp, name: postgresql, version: PostgreSQL 16.2}
+
+  - ip: 192.168.1.50
+    hostname: jump-01
+    os: Ubuntu 22.04
+    services:
+      - {port: 22, protocol: tcp, name: ssh, version: OpenSSH 9.6}
+
+  - ip: 192.168.1.101
+    hostname: ws-01
+    os: Windows 11
+    services:
+      - {port: 135,  protocol: tcp, name: msrpc,         version: Microsoft Windows RPC}
+      - {port: 445,  protocol: tcp, name: microsoft-ds,  version: ""}
+      - {port: 3389, protocol: tcp, name: ms-wbt-server, version: Microsoft Terminal Services}
+
+  - ip: 192.168.1.102
+    hostname: ws-02
+    os: Windows 11
+    services:
+      - {port: 135,  protocol: tcp, name: msrpc,         version: Microsoft Windows RPC}
+      - {port: 445,  protocol: tcp, name: microsoft-ds,  version: ""}
+      - {port: 3389, protocol: tcp, name: ms-wbt-server, version: Microsoft Terminal Services}
+
+  - ip: 192.168.1.103
+    hostname: ws-03
+    os: Windows 10
+    services:
+      - {port: 135,  protocol: tcp, name: msrpc,         version: Microsoft Windows RPC}
+      - {port: 445,  protocol: tcp, name: microsoft-ds,  version: ""}
+      - {port: 3389, protocol: tcp, name: ms-wbt-server, version: Microsoft Terminal Services}
+
+  - ip: 192.168.1.104
+    hostname: ws-04
+    os: Windows 11
+    services:
+      - {port: 135,  protocol: tcp, name: msrpc,         version: Microsoft Windows RPC}
+      - {port: 445,  protocol: tcp, name: microsoft-ds,  version: ""}
+      - {port: 3389, protocol: tcp, name: ms-wbt-server, version: Microsoft Terminal Services}
+
+  - ip: 192.168.1.120
+    hostname: printer-01
+    os: ""
+    services:
+      - {port: 80,   protocol: tcp, name: http,      version: HP embedded web server}
+      - {port: 631,  protocol: tcp, name: ipp,       version: ""}
+      - {port: 9100, protocol: tcp, name: jetdirect, version: ""}
+
+  - ip: 192.168.1.121
+    hostname: cam-01
+    os: ""
+    services:
+      - {port: 23,  protocol: tcp, name: telnet, version: ""}
+      - {port: 80,  protocol: tcp, name: http,   version: GoAhead WebServer}
+      - {port: 554, protocol: tcp, name: rtsp,   version: ""}
+
+  - ip: 192.168.1.200
+    hostname: legacy-01
+    os: ""
+    services:
+      - {port: 102, protocol: tcp, name: iso-tsap, version: ""}
