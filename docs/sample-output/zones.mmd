@@ -1,0 +1,41 @@
+flowchart TB
+    subgraph dmz["dmz (10.10.10.0/24)"]
+        dmz_web_01["web-01<br/>web-server"]
+        dmz_web_02["web-02<br/>web-server"]
+    end
+    subgraph app_tier["app-tier (10.10.20.0/24)"]
+        app_tier_app_01["app-01<br/>app-server"]
+    end
+    subgraph data_tier["data-tier (10.10.30.0/24)"]
+        data_tier_db_01["db-01<br/>database"]
+        data_tier_db_02["db-02<br/>database"]
+    end
+    subgraph user_vlan["user-vlan (10.10.40.0/24)"]
+        user_vlan_ws_01["ws-01<br/>workstation"]
+        user_vlan_ws_02["ws-02<br/>workstation"]
+        user_vlan_ws_03["ws-03<br/>workstation"]
+        user_vlan_ws_04["ws-04<br/>workstation"]
+    end
+    subgraph iot_vlan["iot-vlan (10.10.50.0/24)"]
+        iot_vlan_printer_01["printer-01<br/>printer"]
+        iot_vlan_cam_01["cam-01<br/>iot"]
+    end
+    subgraph management["management (10.10.60.0/24)"]
+        management_dc_01["dc-01<br/>domain-controller"]
+        management_jump_01["jump-01<br/>jump-host"]
+    end
+    subgraph quarantine["quarantine (10.10.99.0/24)"]
+        quarantine_legacy_01["legacy-01<br/>unknown"]
+    end
+    user_vlan -->|80,443| dmz
+    dmz -->|8080| app_tier
+    user_vlan -->|8080| app_tier
+    app_tier -->|3306,5432| data_tier
+    user_vlan -->|53,88,389,636| management
+    app_tier -->|53,88,389,636| management
+    user_vlan -->|631,9100| iot_vlan
+    management -->|22| dmz
+    management -->|22| app_tier
+    management -->|22| data_tier
+    management -->|3389| user_vlan
+    %% All other inter-zone traffic: default deny
