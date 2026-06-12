@@ -1,0 +1,81 @@
+# Fake flat network for exercising the real nmap discovery path end-to-end.
+# Every container sits on one bridge subnet (172.28.0.0/24) with a static IP,
+# mimicking the unsegmented network the advisor is designed to fix.
+#
+# macOS note: Docker Desktop does NOT route from the host into container
+# networks, so scan from *inside* the network using the bundled scanner:
+#
+#   docker compose up -d
+#   docker compose run --rm scanner
+#   # inside the container:
+#   apk add --no-cache nmap nmap-scripts py3-pip
+#   pip install --break-system-packages -r requirements.txt
+#   python cli.py discover --target 172.28.0.5-50 --out inventory-docker.yaml
+#   python cli.py report --inventory inventory-docker.yaml
+#
+# Caveat (by design): containers share the host kernel, so OS/service
+# fingerprints are thinner than real VMs. Use this to validate topology and
+# service discovery; use mock mode for precise classifier inputs.
+
+networks:
+  flatnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
+services:
+  web-01:
+    image: nginx:alpine
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.10
+
+  web-02:
+    image: nginx:alpine
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.11
+
+  app-01:
+    image: python:3.12-alpine
+    command: python -m http.server 8080
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.20
+
+  db-01:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: devonly-not-a-secret
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.30
+
+  db-02:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: devonly-not-a-secret
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.31
+
+  cache-01:
+    image: redis:7-alpine
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.32
+
+  # Scan platform: run nmap/the advisor from inside the flat network,
+  # because the macOS host cannot reach container IPs directly.
+  scanner:
+    image: python:3.12-alpine
+    command: sh
+    stdin_open: true
+    tty: true
+    working_dir: /advisor
+    volumes:
+      - .:/advisor
+    networks:
+      flatnet:
+        ipv4_address: 172.28.0.250
