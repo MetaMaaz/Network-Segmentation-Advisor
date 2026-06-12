@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# generated reports (the curated sample lives in docs/sample-output/)
+output/
+
+# real scan results — never commit inventories of networks you scan
+inventory*.yaml
+!data/mock_inventory.yaml
+
+.DS_Store
