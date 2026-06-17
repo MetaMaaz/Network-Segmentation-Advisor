@@ -1,7 +1,6 @@
 # Network Segmentation Advisor
 
-<!-- After pushing, replace YOUR-USERNAME so the CI badge goes live -->
-![CI](https://github.com/YOUR-USERNAME/segmentation-advisor/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/MetaMaaz/Network-Segmentation-Advisor/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -68,8 +67,8 @@ flowchart TB
 ## Quickstart (no network required)
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/segmentation-advisor
-cd segmentation-advisor
+git clone https://github.com/MetaMaaz/Network-Segmentation-Advisor
+cd Network-Segmentation-Advisor
 pip install -r requirements.txt
 
 python cli.py analyze                 # console summary against the mock network
@@ -137,6 +136,10 @@ Classifier, recommender, attack-path and model suites all run against the mock i
 - UDP service handling and OS-fingerprint-aware classification
 - pfSense `config.xml` generation for direct import
 - A second mock topology (already-segmented network) to test violation detection in non-flat layouts
+
+## Portfolio note
+
+> Built a zero-trust network segmentation advisor in Python: classifies discovered assets, generates a least-privilege inter-zone firewall policy with every rule mapped to NIST SP 800-207 / PCI DSS, and validates it with before/after attack-path simulation (lateral movement cut from 11 hosts - including all critical assets - to 3, with zero critical assets reachable).
 
 ## License
 
