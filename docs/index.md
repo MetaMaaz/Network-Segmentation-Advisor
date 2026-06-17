@@ -3,8 +3,6 @@ title: Network Segmentation Advisor
 description: A zero-trust segmentation advisor that turns a network inventory into a least-privilege, framework-justified firewall plan.
 ---
 
-# Network Segmentation Advisor
-
 A zero-trust segmentation advisor: it takes a network inventory (a live Nmap scan or replayed YAML), classifies every host by role and sensitivity, and produces a least-privilege segmentation plan — security zones, an inter-zone firewall ruleset where every rule cites the NIST SP 800-207 / PCI DSS principle it implements, and a before/after attack-path simulation that shows how much lateral movement the plan removes.
 
 Scanning a network is table stakes — Nmap already does that. The point here is the advisory engine on top: explainable, framework-grounded recommendations plus enforceable config (iptables / pfSense), not prose advice.
