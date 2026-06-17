@@ -138,10 +138,6 @@ Classifier, recommender, attack-path and model suites all run against the mock i
 - pfSense `config.xml` generation for direct import
 - A second mock topology (already-segmented network) to test violation detection in non-flat layouts
 
-## Portfolio note
-
-> Built a zero-trust network segmentation advisor in Python: classifies discovered assets, generates a least-privilege inter-zone firewall policy with every rule mapped to NIST SP 800-207 / PCI DSS, and validates it with before/after attack-path simulation (lateral movement cut from 11 hosts - including all critical assets - to 3, with zero critical assets reachable).
-
 ## License
 
 MIT - see [LICENSE](LICENSE).
